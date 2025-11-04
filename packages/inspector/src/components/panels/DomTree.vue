@@ -43,7 +43,7 @@ const debouncedHover = useDebounceFn((el: Element | null) => {
     element.value = el as HTMLElement
   }
   else {
-    element.value = latestSelected.value as any
+    element.value = latestSelected.value as HTMLElement | null
   }
   updateInSelf.value = true
   setTimeout(() => {

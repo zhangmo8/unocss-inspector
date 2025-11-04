@@ -17,17 +17,23 @@ function tracking() {
  * Safely trigger an update for the element, wait for the next animation frame
  */
 function triggering() {
-  if (!SELECTED_ELEMENT.value)
-    return
+  try {
+    if (!SELECTED_ELEMENT.value)
+      return
 
-  const computedStyle = window.getComputedStyle(SELECTED_ELEMENT.value)
-  const transitionTime = Number.parseFloat(computedStyle.transitionDuration) + Number.parseFloat(computedStyle.transitionDelay)
-  const animateTime = Number.parseFloat(computedStyle.animationDuration) + Number.parseFloat(computedStyle.animationDelay)
-  const maxTime = Math.max(transitionTime, animateTime)
+    const computedStyle = window.getComputedStyle(SELECTED_ELEMENT.value)
+    const transitionTime = Number.parseFloat(computedStyle.transitionDuration) + Number.parseFloat(computedStyle.transitionDelay)
+    const animateTime = Number.parseFloat(computedStyle.animationDuration) + Number.parseFloat(computedStyle.animationDelay)
+    const maxTime = Math.max(transitionTime, animateTime)
 
-  setTimeout(() => {
+    setTimeout(() => {
+      STATE.value++
+    }, maxTime * 1000 + 50)
+  }
+  catch (error) {
+    console.error('[UnoCSS Inspector] Failed to trigger update:', error)
     STATE.value++
-  }, maxTime * 1000 + 50)
+  }
 }
 
 export function useTracker() {
@@ -56,14 +62,19 @@ export function useElement() {
 
   function setElementStyle(styles: Partial<CSSStyleDeclaration>, mode: 'style' | 'class' | 'both' = 'style') {
     if (element?.value) {
-      if (mode === 'style' || mode === 'both') {
-        Object.assign((element.value as HTMLElement).style, styles)
-      }
-      if (mode === 'class' || mode === 'both') {
-        // TODO: 将 styles 转换为 UnoCSS utility classes
-      }
+      try {
+        if (mode === 'style' || mode === 'both') {
+          Object.assign((element.value as HTMLElement).style, styles)
+        }
+        if (mode === 'class' || mode === 'both') {
+          // TODO: 将 styles 转换为 UnoCSS utility classes
+        }
 
-      triggering()
+        triggering()
+      }
+      catch (error) {
+        console.error('[UnoCSS Inspector] Failed to set element style:', error)
+      }
     }
   }
 

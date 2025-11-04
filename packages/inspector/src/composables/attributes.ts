@@ -174,62 +174,69 @@ export function useAttributes() {
       return
     }
 
-    const currentActiveValues = activeAttributes.value.get(attrName)
-    const currentActiveArray = currentActiveValues ? Array.from(currentActiveValues) : []
+    try {
+      const currentActiveValues = activeAttributes.value.get(attrName)
+      const currentActiveArray = currentActiveValues ? Array.from(currentActiveValues) : []
 
-    // 找出被删除的值（当前活跃但不在新值中的）
-    const removedValues = currentActiveArray.filter(value => !newValues.includes(value))
+      // 找出被删除的值（当前活跃但不在新值中的）
+      const removedValues = currentActiveArray.filter(value => !newValues.includes(value))
 
-    // 找出被恢复的值（之前隐藏但现在在新值中的）
-    const hiddenValues = hiddenAttributes.value.get(attrName) || []
-    const restoredValues = hiddenValues.filter(value => newValues.includes(value))
+      // 找出被恢复的值（之前隐藏但现在在新值中的）
+      const hiddenValues = hiddenAttributes.value.get(attrName) || []
+      const restoredValues = hiddenValues.filter(value => newValues.includes(value))
 
-    // 更新隐藏属性映射
-    if (removedValues.length > 0) {
-      const existingHidden = hiddenAttributes.value.get(attrName) || []
-      const updatedHidden = [...new Set([...existingHidden, ...removedValues])]
-      hiddenAttributes.value.set(attrName, updatedHidden)
-    }
-
-    if (restoredValues.length > 0) {
-      const existingHidden = hiddenAttributes.value.get(attrName) || []
-      const updatedHidden = existingHidden.filter(value => !restoredValues.includes(value))
-      if (updatedHidden.length > 0) {
+      // 更新隐藏属性映射
+      if (removedValues.length > 0) {
+        const existingHidden = hiddenAttributes.value.get(attrName) || []
+        const updatedHidden = [...new Set([...existingHidden, ...removedValues])]
         hiddenAttributes.value.set(attrName, updatedHidden)
       }
-      else {
-        hiddenAttributes.value.delete(attrName)
+
+      if (restoredValues.length > 0) {
+        const existingHidden = hiddenAttributes.value.get(attrName) || []
+        const updatedHidden = existingHidden.filter(value => !restoredValues.includes(value))
+        if (updatedHidden.length > 0) {
+          hiddenAttributes.value.set(attrName, updatedHidden)
+        }
+        else {
+          hiddenAttributes.value.delete(attrName)
+        }
       }
-    }
 
-    // 保存隐藏的属性到元素
-    saveHiddenAttributes(element.value)
+      // 保存隐藏的属性到元素
+      saveHiddenAttributes(element.value)
 
-    // 如果为空数组，则删除属性
-    if (newValues.length === 0) {
-      element.value.removeAttribute(attrName)
-    }
-    // 如果只包含占位符 '~'，则添加空属性
-    else if (newValues.length === 1 && newValues[0] === '~') {
-      element.value.setAttribute(attrName, '')
-    }
-    else {
-      // 过滤掉占位符 '~'，只设置实际的值
-      const filteredValues = newValues.filter(value => value !== '~')
-      if (filteredValues.length === 0) {
+      // 如果为空数组，则删除属性
+      if (newValues.length === 0) {
         element.value.removeAttribute(attrName)
       }
-      else {
-        // 按照原始顺序重新排列值
-        const originalOrder = originalValueOrder.value.get(attrName) || []
-        const orderedValues = originalOrder.filter(value => filteredValues.includes(value))
-        const newUniqueValues = filteredValues.filter(value => !originalOrder.includes(value))
-        const finalValues = [...orderedValues, ...newUniqueValues]
-
-        element.value.setAttribute(attrName, finalValues.join(' '))
+      // 如果只包含占位符 '~'，则添加空属性
+      else if (newValues.length === 1 && newValues[0] === '~') {
+        element.value.setAttribute(attrName, '')
       }
+      else {
+        // 过滤掉占位符 '~'，只设置实际的值
+        const filteredValues = newValues.filter(value => value !== '~')
+        if (filteredValues.length === 0) {
+          element.value.removeAttribute(attrName)
+        }
+        else {
+          // 按照原始顺序重新排列值
+          const originalOrder = originalValueOrder.value.get(attrName) || []
+          const orderedValues = originalOrder.filter(value => filteredValues.includes(value))
+          const newUniqueValues = filteredValues.filter(value => !originalOrder.includes(value))
+          const finalValues = [...orderedValues, ...newUniqueValues]
+
+          element.value.setAttribute(attrName, finalValues.join(' '))
+        }
+      }
+
+      triggering()
     }
-    triggering()
+    catch (error) {
+      console.error('[UnoCSS Inspector] Failed to update attribute:', error)
+      triggering()
+    }
   }
 
   return {

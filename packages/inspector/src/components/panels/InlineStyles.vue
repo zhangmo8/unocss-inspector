@@ -2,11 +2,16 @@
 import type { VNode } from 'vue'
 import { computed, ref, watch } from 'vue'
 import { useElement } from '../../composables/exports/element'
+
 import FormControl from '../basic/FormControl.vue'
 import FormControlGroup from '../basic/FormControlGroup.vue'
 import Select from '../basic/Select.vue'
 import Empty from '../sections/Empty.vue'
 import PanelTitle from '../sections/PanelTitle.vue'
+
+interface VNodeElement extends HTMLElement {
+  __vnode?: VNode
+}
 
 const { element, tracking } = useElement()
 
@@ -31,7 +36,7 @@ const styles = computed(() => {
 
   const el = element.value
   if (el.style.length > 0) {
-    const vnode = (el as any).__vnode as VNode | undefined
+    const vnode = (el as VNodeElement).__vnode
     if (vnode) {
       for (const [key, value] of Object.entries(vnode.props?.style || {})) {
         inlineStyles[key] = value as string

@@ -3,12 +3,12 @@ import type { Options } from './core/options'
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import DEBUG from 'debug'
 import { createUnplugin } from 'unplugin'
 import { resolveOptions } from './core/options'
 
-// eslint-disable-next-line unused-imports/no-unused-vars
-const log = DEBUG('inspect:unplugin')
+// Debug logger (kept for future use)
+// import DEBUG from 'debug'
+// const log = DEBUG('inspect:unplugin')
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -24,38 +24,44 @@ export const Starter: UnpluginInstance<Options | undefined, false> = createUnplu
     apply: 'serve',
     vite: {
       transformIndexHtml(html) {
-        const tags = [
-          {
-            tag: 'link' as const,
-            attrs: {
-              rel: 'stylesheet',
-              href: `/@id/${VIRTUALURL}:inspector.css`,
+        try {
+          const tags = [
+            {
+              tag: 'link' as const,
+              attrs: {
+                rel: 'stylesheet',
+                href: `/@id/${VIRTUALURL}:inspector.css`,
+              },
+              injectTo: 'head' as const,
             },
-            injectTo: 'head' as const,
-          },
-          ...(options.customStyles
-            ? [{
-                tag: 'style' as const,
-                attrs: {
-                  type: 'text/css',
-                },
-                children: `/* Custom user styles */\n${options.customStyles}`,
-                injectTo: 'head' as const,
-              }]
-            : []),
-          {
-            tag: 'script',
-            attrs: {
-              type: 'module',
-              src: `/@id/${VIRTUALURL}:app.js`,
+            ...(options.customStyles
+              ? [{
+                  tag: 'style' as const,
+                  attrs: {
+                    type: 'text/css',
+                  },
+                  children: `/* Custom user styles */\n${options.customStyles}`,
+                  injectTo: 'head' as const,
+                }]
+              : []),
+            {
+              tag: 'script',
+              attrs: {
+                type: 'module',
+                src: `/@id/${VIRTUALURL}:app.js`,
+              },
+              injectTo: 'head' as const,
             },
-            injectTo: 'head' as const,
-          },
-        ]
+          ]
 
-        return {
-          html,
-          tags,
+          return {
+            html,
+            tags,
+          }
+        }
+        catch (error) {
+          console.error('[unplugin-uno-inspector] Failed to transform HTML:', error)
+          return html
         }
       },
       resolveId(id) {
@@ -76,7 +82,8 @@ export const Starter: UnpluginInstance<Options | undefined, false> = createUnplu
             return appCode
           }
           catch (error) {
-            console.warn(`Could not load app.js from ${appJsPath}`, error)
+            console.warn('[unplugin-uno-inspector] Could not load app.js from', appJsPath, error)
+            return
           }
         }
 
@@ -88,7 +95,7 @@ export const Starter: UnpluginInstance<Options | undefined, false> = createUnplu
             }
           }
           catch (error) {
-            console.warn('failed to load inspector.css:', error)
+            console.warn('[unplugin-uno-inspector] Failed to load inspector.css:', error)
           }
         }
       },

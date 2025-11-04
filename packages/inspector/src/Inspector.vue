@@ -73,43 +73,64 @@ const highlightStyle = computed(() => {
 
 // 方法
 function updateHighlight() {
-  triggering()
+  try {
+    triggering()
+  }
+  catch (error) {
+    console.error('[UnoCSS Inspector] Failed to update highlight:', error)
+  }
 }
 
 function startSelecting() {
-  isSelecting.value = true
+  try {
+    isSelecting.value = true
 
-  // 确保在 body 元素上监听事件，因为检查器组件已经传送到 body
-  document.body.addEventListener('mouseover', handleMouseOver, { capture: true })
-  document.body.addEventListener('click', handleClick, { capture: true })
-  document.body.style.cursor = 'crosshair'
+    // 确保在 body 元素上监听事件，因为检查器组件已经传送到 body
+    document.body.addEventListener('mouseover', handleMouseOver, { capture: true })
+    document.body.addEventListener('click', handleClick, { capture: true })
+    document.body.style.cursor = 'crosshair'
 
-  // 添加窗口事件监听
-  window.addEventListener('resize', updateHighlight)
-  window.addEventListener('scroll', updateHighlight, true) // 使用 capture 监听所有滚动事件
+    // 添加窗口事件监听
+    window.addEventListener('resize', updateHighlight)
+    window.addEventListener('scroll', updateHighlight, true) // 使用 capture 监听所有滚动事件
+  }
+  catch (error) {
+    console.error('[UnoCSS Inspector] Failed to start selecting:', error)
+    stopSelecting()
+  }
 }
 
 function stopSelecting() {
-  isSelecting.value = false
-  selectedElement.value = null
+  try {
+    isSelecting.value = false
+    selectedElement.value = null
 
-  document.body.removeEventListener('mouseover', handleMouseOver, { capture: true })
-  document.body.removeEventListener('click', handleClick, { capture: true })
-  document.body.style.cursor = ''
+    document.body.removeEventListener('mouseover', handleMouseOver, { capture: true })
+    document.body.removeEventListener('click', handleClick, { capture: true })
+    document.body.style.cursor = ''
 
-  // 移除窗口事件监听
-  window.removeEventListener('resize', updateHighlight)
-  window.removeEventListener('scroll', updateHighlight, true)
+    // 移除窗口事件监听
+    window.removeEventListener('resize', updateHighlight)
+    window.removeEventListener('scroll', updateHighlight, true)
+  }
+  catch (error) {
+    console.error('[UnoCSS Inspector] Failed to stop selecting:', error)
+  }
 }
 
 function handleMouseOver(event: MouseEvent) {
   if (!isSelecting.value)
     return
 
-  const target = event.target as HTMLElement
-  // Exclude some dom elements
-  if (target && !target.closest('.uno-inspect-controls') && !target.closest('.uno-inspect-element-info')) {
-    selectedElement.value = target
+  try {
+    const target = event.target as HTMLElement
+    // Exclude some dom elements
+    if (target && !target.closest('.uno-inspect-controls') && !target.closest('.uno-inspect-element-info')) {
+      selectedElement.value = target
+    }
+  }
+  catch (error) {
+    console.error('[UnoCSS Inspector] Error in handleMouseOver:', error)
   }
 }
 
@@ -117,19 +138,25 @@ function handleClick(event: MouseEvent) {
   if (!isSelecting.value)
     return
 
-  event.preventDefault()
-  event.stopPropagation()
-  event.stopImmediatePropagation()
+  try {
+    event.preventDefault()
+    event.stopPropagation()
+    event.stopImmediatePropagation()
 
-  const target = event.target as HTMLElement
-  if (target && !target.closest('.uno-inspect-controls') && !target.closest('.uno-inspect-element-info')) {
-    selectedElement.value = target
-    modelValueElement.value = target
-    isSelecting.value = false
+    const target = event.target as HTMLElement
+    if (target && !target.closest('.uno-inspect-controls') && !target.closest('.uno-inspect-element-info')) {
+      selectedElement.value = target
+      modelValueElement.value = target
+      isSelecting.value = false
 
-    document.body.removeEventListener('mouseover', handleMouseOver, { capture: true })
-    document.body.removeEventListener('click', handleClick, { capture: true })
-    document.body.style.cursor = ''
+      document.body.removeEventListener('mouseover', handleMouseOver, { capture: true })
+      document.body.removeEventListener('click', handleClick, { capture: true })
+      document.body.style.cursor = ''
+    }
+  }
+  catch (error) {
+    console.error('[UnoCSS Inspector] Error in handleClick:', error)
+    stopSelecting()
   }
 }
 
@@ -153,30 +180,36 @@ function startControlDrag(event: MouseEvent) {
 }
 
 function handleControlDrag(event: MouseEvent) {
-  // 计算鼠标移动距离
-  const moveDistance = Math.sqrt(
-    (event.clientX - mouseDownPosition.value.x) ** 2
-    + (event.clientY - mouseDownPosition.value.y) ** 2,
-  )
+  try {
+    // 计算鼠标移动距离
+    const moveDistance = Math.sqrt(
+      (event.clientX - mouseDownPosition.value.x) ** 2
+      + (event.clientY - mouseDownPosition.value.y) ** 2,
+    )
 
-  // 如果移动距离超过阈值，则认为是拖拽操作
-  if (moveDistance > 5) {
-    isDraggingControl.value = true
-    hasMoved.value = true
+    // 如果移动距离超过阈值，则认为是拖拽操作
+    if (moveDistance > 5) {
+      isDraggingControl.value = true
+      hasMoved.value = true
+    }
+
+    if (!isDraggingControl.value)
+      return
+
+    const newX = event.clientX - dragOffset.value.x
+    const newY = event.clientY - dragOffset.value.y
+
+    // 限制在视口内
+    const controlSize = 40 // 按钮大小
+
+    controlPosition.value = {
+      x: Math.max(0, Math.min(newX, windowWidth.value - controlSize)),
+      y: Math.max(0, Math.min(newY, windowHeight.value - controlSize)),
+    }
   }
-
-  if (!isDraggingControl.value)
-    return
-
-  const newX = event.clientX - dragOffset.value.x
-  const newY = event.clientY - dragOffset.value.y
-
-  // 限制在视口内
-  const controlSize = 40 // 按钮大小
-
-  controlPosition.value = {
-    x: Math.max(0, Math.min(newX, windowWidth.value - controlSize)),
-    y: Math.max(0, Math.min(newY, windowHeight.value - controlSize)),
+  catch (error) {
+    console.error('[UnoCSS Inspector] Error in handleControlDrag:', error)
+    stopControlDrag()
   }
 }
 

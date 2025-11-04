@@ -2,7 +2,7 @@
   "name": "@unoc-inspect/monorepo",
   "type": "module",
   "version": "0.0.0",
-  "packageManager": "pnpm@10.18.3",
+  "packageManager": "pnpm@10.20.0",
   "author": "Chris",
   "license": "MIT",
   "scripts": {
@@ -16,7 +16,7 @@
     "deploy": "pnpm build && pnpm play:component",
     "test": "vitest",
     "typecheck": "tsc --noEmit",
-    "taze": "taze major -wIr"
+    "taze": "npx taze major -wIr"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:lint",
@@ -28,9 +28,14 @@
     "@unocss/preset-web-fonts": "catalog:unocss",
     "@unocss/preset-wind4": "catalog:unocss",
     "@vitejs/plugin-vue": "catalog:vue",
+    "@vitest/coverage-v8": "catalog:test",
+    "@vue/test-utils": "catalog:test",
     "debug": "catalog:utils",
     "eslint": "catalog:lint",
     "esno": "catalog:utils",
+    "happy-dom": "catalog:test",
+    "jsdom": "catalog:test",
+    "taze": "catalog:taze",
     "tinyglobby": "catalog:utils",
     "tsdown": "catalog:build",
     "tsx": "catalog:build",
@@ -38,6 +43,7 @@
     "unocss": "catalog:unocss",
     "vite": "catalog:build",
     "vite-plugin-dts": "catalog:build",
+    "vitest": "catalog:test",
     "vue": "catalog:vue",
     "vue-tsc": "catalog:vue"
   }

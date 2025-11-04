@@ -97,33 +97,38 @@ export function useClassList() {
         return
       }
 
-      // Find out the classes that have been unchecked
-      const currentClasses = new Set(activeClasses.value)
-      const newClassesSet = new Set(newList)
+      try {
+        // Find out the classes that have been unchecked
+        const currentClasses = new Set(activeClasses.value)
+        const newClassesSet = new Set(newList)
 
-      // Find out the classes that have been unchecked
-      currentClasses.forEach((className) => {
-        if (!newClassesSet.has(className)) {
-          hiddenClasses.value.add(className)
-        }
-      })
+        // Find out the classes that have been unchecked
+        currentClasses.forEach((className) => {
+          if (!newClassesSet.has(className)) {
+            hiddenClasses.value.add(className)
+          }
+        })
 
-      // Find out the classes that have been unchecked
-      newList.forEach((className) => {
-        if (hiddenClasses.value.has(className)) {
-          hiddenClasses.value.delete(className)
-        }
-      })
+        // Find out the classes that have been unchecked
+        newList.forEach((className) => {
+          if (hiddenClasses.value.has(className)) {
+            hiddenClasses.value.delete(className)
+          }
+        })
 
-      saveHiddenClasses(element.value)
+        saveHiddenClasses(element.value)
 
-      const orderedList = originalClassOrder.value.filter(className => newList.includes(className))
-      const newClasses = newList.filter(className => !originalClassOrder.value.includes(className))
-      const finalList = [...orderedList, ...newClasses]
+        const orderedList = originalClassOrder.value.filter(className => newList.includes(className))
+        const newClasses = newList.filter(className => !originalClassOrder.value.includes(className))
+        const finalList = [...orderedList, ...newClasses]
 
-      element.value.className = finalList.join(' ')
-
-      triggering()
+        element.value.className = finalList.join(' ')
+        triggering()
+      }
+      catch (error) {
+        console.error('[UnoCSS Inspector] Failed to update classList:', error)
+        triggering()
+      }
     },
   })
 

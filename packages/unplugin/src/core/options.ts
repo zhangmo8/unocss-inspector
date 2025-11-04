@@ -1,8 +1,10 @@
+import type { Component } from 'vue'
+
 export interface Panel {
   id: string
   label: string
   icon?: string
-  component: any
+  component: Component
 }
 
 export interface Options {

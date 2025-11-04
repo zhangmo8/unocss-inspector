@@ -33,7 +33,8 @@ try {
 
   console.log('[unplugin-uno-inspector]: ✅ Successfully copied inspector UI files from inspector package')
 }
-catch (error: any) {
-  console.error('[unplugin-uno-inspector]: ❌ Failed to copy inspector UI files:', error.message)
+catch (error: unknown) {
+  const message = error instanceof Error ? error.message : String(error)
+  console.error('[unplugin-uno-inspector]: ❌ Failed to copy inspector UI files:', message)
   process.exit(1)
 }
