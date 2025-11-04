@@ -1,0 +1,20 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`useAttributes > should follow naming conventions > naming-convention 1`] = `"test"`;
+
+exports[`useAttributes > should support snapshot testing > attributes-structure 1`] = `
+{
+  "attributes": Map {
+    "data-test" => {
+      "active": [
+        "value1",
+        "value2",
+      ],
+      "all": [
+        "value1",
+        "value2",
+      ],
+    },
+  },
+}
+`;

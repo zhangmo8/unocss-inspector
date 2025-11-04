@@ -1,0 +1,19 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`useClassList > should maintain class order > class-order 1`] = `"class-a class-b class-c"`;
+
+exports[`useClassList > should support snapshot testing > class-list 1`] = `
+[
+  "class-a",
+  "class-b",
+  "class-c",
+]
+`;
+
+exports[`useClassList > should support snapshot testing > display-classes 1`] = `
+[
+  "class-a",
+  "class-b",
+  "class-c",
+]
+`;

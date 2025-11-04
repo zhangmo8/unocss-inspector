@@ -1,0 +1,10 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`formControl Component > should update value when checkbox is clicked 1`] = `
+"<div inline-flex="" w-fit="" flex="items-center gap-0.75" children:cursor-pointer="" select-none="">
+  <div class="inline-flex items-center relative"><input id="y5zgzxje2" checked="" type="checkbox" class="btn-clear peer checked:b-$context-color/50 b b-solid b-white/30 rd-sm" style="--webkit-appearance: none; appearance: none;">
+    <div class="pos-center transition-all size-0 peer-checked:size-58% peer-checked:bg-$context-color rd-2px"></div>
+  </div>
+  <!--v-if-->
+</div>"
+`;

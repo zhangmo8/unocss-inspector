@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`useElement > should support snapshot testing > element-state 1`] = `
+{
+  "elementTagName": "DIV",
+  "hasElement": true,
+  "styles": {
+    "color": "blue",
+    "padding": "10px",
+  },
+}
+`;
